@@ -1,10 +1,8 @@
-const API_BASE_URL = import.meta.env.DEV
-  ? (
-      import.meta.env.VITE_API_URL ||
-      import.meta.env.VITE_SOCKET_URL ||
-      "http://localhost:4000"
-    ).replace(/\/$/, "")
-  : ""; // relative path in production so Vercel rewrites proxy it
+const API_BASE_URL = (
+  import.meta.env.VITE_API_URL ||
+  import.meta.env.VITE_SOCKET_URL ||
+  (import.meta.env.DEV ? "http://localhost:4000" : "")
+).replace(/\/$/, "");
 
 // =====================================================
 // CORE FETCH HELPER
