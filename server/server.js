@@ -44,6 +44,8 @@ const defaultAllowedOrigins = [
 
   "http://127.0.0.1:5501",
 
+  "https://real-time-chatapplication-frontend-d1nb.onrender.com",
+
 ];
 
 const envAllowedOrigins =
