@@ -40,7 +40,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/chat",
-    // 🚨 CRITICAL SECURITY: Kept the ProtectedRoute wrapper from Code 1
+    //  CRITICAL SECURITY: Kept the ProtectedRoute wrapper from Code 1
     element: (
       <ProtectedRoute>
         <ChatWorkspace />
@@ -49,7 +49,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        // 🚨 POLISHED: Matched the Dark Mode theme of your ChatArea
+        //  POLISHED: Matched the Dark Mode theme of your ChatArea
         element: (
           <div className="flex-1 bg-[#020617] flex items-center justify-center">
             <p className="text-slate-500 text-lg">Select a chat to start messaging</p>
