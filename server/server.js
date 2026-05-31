@@ -6,6 +6,7 @@ import { connect } from "mongoose";
 import { Server } from "socket.io";
 import cors from "cors";
 import path from "path";
+import fs from "fs";
 
 // ROUTES
 import messageRoute from "./APIs/MessageAPI.js";
@@ -14,7 +15,7 @@ import { channelRoute } from "./APIs/ChannelAPI.js";
 import { analyticsRoute } from "./APIs/AnalyticsAPI.js";
 import dashboardRoute from "./APIs/dashboardAPI.js";
 import { messageFeaturesRoute, } from "./APIs/MessageFeaturesAPI.js";
-import { callRoute } from "./APIs/CallAPI.js";
+
 
 // MODELS
 import { MessageModel } from "./Models/MessageModel.js";
@@ -22,8 +23,7 @@ import { ChannelModel } from "./Models/ChannelModel.js";
 import { UserModel } from "./Models/UserModel.js";
 
 // SOCKETS
-import { registerCallSockets }
-from "./socket/callSocket.js";
+
 
 dotenv.config();
 
@@ -169,14 +169,7 @@ io.on("connection", (socket) => {
 
 
 
-  // ==========================================
-  // CALL SOCKETS
-  // ==========================================
 
-  registerCallSockets(
-    io,
-    socket,
-  );
 
 
 
@@ -364,10 +357,7 @@ app.use(
   messageFeaturesRoute,
 );
 
-app.use(
-  "/call-api",
-  callRoute,
-);
+
 
 
 
@@ -600,6 +590,11 @@ app.use(
   ) => {
 
     console.error(err);
+    try {
+      fs.appendFileSync(path.join(process.cwd(), 'server-errors.log'), `${new Date().toISOString()} - ${err.message}\n${err.stack}\n\n`);
+    } catch (logErr) {
+      console.error("Failed to write to server-errors.log:", logErr);
+    }
 
 
 

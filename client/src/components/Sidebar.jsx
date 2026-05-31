@@ -3,6 +3,7 @@ import { useMessageStore } from "../store/useMessageStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { useNavigate } from "react-router";
 import CreateChannelModal from "./CreateChannelModal";
+import { Hash, Plus, Users, MessageSquare, ChevronLeft } from "lucide-react";
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -41,110 +42,142 @@ export default function Sidebar() {
   };
 
   return (
-    <div className={`bg-[#020617] text-white flex flex-col transition-all duration-300 ease-in-out shrink-0 ${
+    <div className={`bg-[#060a1a] text-slate-100 flex flex-col transition-all duration-300 ease-in-out shrink-0 border-r border-white/5 relative z-20 ${
       isSidebarOpen ? "w-[260px] opacity-100" : "w-0 opacity-0 overflow-hidden pointer-events-none"
     }`}>
-      {/* TITLE */}
-
-      <div className="px-5 py-4 font-semibold text-lg border-b border-blue-900 flex justify-between items-center shrink-0">
-        <span>Chats</span>
+      
+      {/* Sidebar Header */}
+      <div className="px-5 py-4 border-b border-white/5 flex justify-between items-center shrink-0 bg-slate-950/20">
+        <span className="font-extrabold text-sm tracking-wider uppercase bg-gradient-to-r from-slate-200 to-slate-400 bg-clip-text text-transparent">
+          Conversations
+        </span>
         <button
           onClick={toggleSidebar}
-          className="text-slate-400 hover:text-white transition-colors cursor-pointer"
+          className="text-slate-500 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-all cursor-pointer"
           title="Collapse Sidebar"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-          </svg>
+          <ChevronLeft size={16} />
         </button>
       </div>
 
-      {/* CHAT LIST */}
-      <div className="flex-1 overflow-y-auto">
+      {/* Main Scroller */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-6">
+        
         {/* CHANNELS SECTION */}
-        <div className="px-5 py-2 text-xs font-bold text-gray-400 uppercase tracking-wider mt-2 flex justify-between items-center">
-          <span>Channels</span>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="hover:text-white bg-slate-800 hover:bg-slate-700 w-5 h-5 rounded flex justify-center items-center font-bold text-lg leading-none pb-0.5 transition-colors cursor-pointer"
-            title="Create Channel"
-          >
-            +
-          </button>
+        <div className="space-y-1.5">
+          <div className="px-2 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest flex justify-between items-center">
+            <span className="flex items-center gap-1.5">
+              <Users size={12} />
+              Channels
+            </span>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="text-slate-400 hover:text-white hover:bg-white/5 w-5 h-5 rounded-lg flex justify-center items-center transition-all cursor-pointer border border-white/5"
+              title="Create Channel"
+            >
+              <Plus size={12} />
+            </button>
+          </div>
+
+          <div className="space-y-0.5">
+            {channels?.length === 0 ? (
+              <div className="px-3 py-2 text-slate-600 text-xs italic">No channels yet</div>
+            ) : (
+              channels?.map((channel) => {
+                const isSelected = selectedUser?._id === channel._id;
+                const unread = unreadCounts[channel._id] || 0;
+                return (
+                  <div
+                    key={channel._id}
+                    onClick={() => handleSidebarChannels(channel)}
+                    className={`px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 flex items-center justify-between group ${
+                      isSelected
+                        ? "bg-gradient-to-r from-blue-600/15 to-indigo-600/10 text-blue-400 border-l-2 border-blue-500 shadow-sm"
+                        : "hover:bg-white/5 text-slate-300 hover:text-white"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-sm ${
+                        isSelected 
+                          ? "bg-blue-600/20 text-blue-400 border border-blue-500/20" 
+                          : "bg-slate-800 text-slate-400 border border-slate-700/50"
+                      }`}>
+                        <Hash size={14} />
+                      </div>
+                      <span className="font-semibold text-sm truncate">{channel.name}</span>
+                    </div>
+
+                    {/* Unread badge */}
+                    {unread > 0 ? (
+                      <span className="bg-blue-600 text-white text-[10px] font-bold min-w-5 h-5 flex items-center justify-center rounded-full px-1 shadow-md shadow-blue-500/10">
+                        {unread}
+                      </span>
+                    ) : (
+                      <span className="text-[10px] opacity-0 group-hover:opacity-50 text-slate-500 transition-opacity font-medium">Join</span>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
         </div>
-        {channels?.length === 0 ? (
-          <div className="px-5 py-2 text-gray-600 text-sm">No channels</div>
-        ) : (
-          channels?.map((channel) => {
-            const unread = unreadCounts[channel._id] || 0;
-            return (
-              <div
-                key={channel._id}
-                onClick={() => handleSidebarChannels(channel)}
-                className={`px-5 py-3 cursor-pointer transition ${
-                  selectedUser?._id === channel._id
-                    ? "bg-blue-600 text-white"
-                    : "hover:text-blue-400 hover:bg-slate-800"
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center font-bold">
-                    #
-                  </div>
-                  <span className="font-medium">{channel.name}</span>
-                </div>
-                {unread > 0 && (
-                  <div className="bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full mt-1">
-                    {unread}
-                  </div>
-                )}
-              </div>
-            );
-          })
-        )}
 
         {/* DIRECT MESSAGES SECTION */}
-        <div className="px-5 py-2 text-xs font-bold text-gray-400 uppercase tracking-wider mt-4">
-          Direct Messages
-        </div>
-        {sidebarUsers.length === 0 ? (
-          <div className="px-5 py-3 text-gray-500 text-sm">
-            No direct messages
+        <div className="space-y-1.5">
+          <div className="px-2 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
+            <MessageSquare size={12} />
+            Direct Messages
           </div>
-        ) : (
-          sidebarUsers.map((user) => {
-            const unread = unreadCounts[user._id] || 0;
-            return (
-              <div
-                key={user._id} // Use your actual unique ID property (like user.id or user._id)
-                onClick={() => handleSidebarUsers(user)}
-                className={`px-5 py-3 cursor-pointer transition ${
-                  selectedUser?._id === user._id
-                    ? "bg-blue-600 text-white" // highlight active chat
-                    : "hover:text-blue-400 hover:bg-slate-800"
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
-                    {user.firstName
-                      ? user.firstName.charAt(0).toUpperCase()
-                      : "?"}
-                  </div>
-                  <span>
-                    {user.username ||
-                      `${user.firstName} ${user.lastName || ""}`}
-                  </span>
-                </div>
-                {/* --- UNREAD BADGE --- */}
-                {unread > 0 && (
-                  <div className="bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
-                    {unread}
-                  </div>
-                )}
+
+          <div className="space-y-0.5">
+            {sidebarUsers.length === 0 ? (
+              <div className="px-3 py-2 text-slate-600 text-xs italic">
+                No direct chats
               </div>
-            );
-          })
-        )}
+            ) : (
+              sidebarUsers.map((user) => {
+                const isSelected = selectedUser?._id === user._id;
+                const unread = unreadCounts[user._id] || 0;
+                const initials = user.firstName ? user.firstName.charAt(0).toUpperCase() : "?";
+
+                return (
+                  <div
+                    key={user._id}
+                    onClick={() => handleSidebarUsers(user)}
+                    className={`px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 flex items-center justify-between group ${
+                      isSelected
+                        ? "bg-gradient-to-r from-blue-600/15 to-indigo-600/10 text-blue-400 border-l-2 border-blue-500 shadow-sm"
+                        : "hover:bg-white/5 text-slate-300 hover:text-white"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shadow-inner relative flex-shrink-0 ${
+                        isSelected 
+                          ? "bg-blue-600/20 text-blue-400 border border-blue-500/20" 
+                          : "bg-slate-700 text-slate-300"
+                      }`}>
+                        {initials}
+                        
+                        {/* Fake active indicator (online state placeholder) */}
+                        <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 border border-[#060a1a]"></div>
+                      </div>
+                      <span className="font-semibold text-sm truncate">
+                        {user.username || `${user.firstName} ${user.lastName || ""}`}
+                      </span>
+                    </div>
+
+                    {/* Unread badge */}
+                    {unread > 0 && (
+                      <span className="bg-blue-600 text-white text-[10px] font-bold min-w-5 h-5 flex items-center justify-center rounded-full px-1 shadow-md shadow-blue-500/10">
+                        {unread}
+                      </span>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
       </div>
 
       <CreateChannelModal

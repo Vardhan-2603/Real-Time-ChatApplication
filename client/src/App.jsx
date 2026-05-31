@@ -98,11 +98,11 @@ function AuthLoading() {
 
       {/* tagline */}
       <p className="text-center mb-8 z-10 px-6 leading-relaxed">
-        <span className="text-blue-400 text-5xl font-extrabold tracking-wide drop-shadow-[0_0_12px_#3b82f6] transition-transform duration-300 hover:scale-125 cursor-pointer">
-          Spark
+        <span className="text-blue-400 text-5xl font-extrabold tracking-wide drop-shadow-[0_0_12px_#3b82f6] transition-transform duration-300 hover:scale-110 cursor-pointer">
+          Chat Application
         </span>
         <span className="text-white text-xl ml-3 font-semibold">
-          – unleash chaos, ignite conversations, and watch the universe of ideas collide in real time.
+          – ignite conversations, connect instantly, and collaborate in real time.
         </span>
       </p>
 

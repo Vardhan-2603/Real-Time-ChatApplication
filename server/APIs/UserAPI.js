@@ -6,6 +6,7 @@ import { verifyToken } from "../middleware/verifyToken.js";
 import { MessageModel } from "../Models/MessageModel.js";
 import { ChannelModel } from "../Models/ChannelModel.js";
 import mongoose from "mongoose";
+import { upload } from "../middleware/upload.js";
 
 export const userRouter = express.Router();
 
@@ -171,62 +172,6 @@ userRouter.patch("/change-password", verifyToken, async (req, res) => {
     .json({ message: "Password Updated Successfully", payload: newUserObj });
 });
 
-userRouter.post(
-  "/google-login",
-
-  async (req, res) => {
-    try {
-      const { email, firstName, lastName, profilePic } = req.body;
-
-      let user = await UserModel.findOne({
-        email,
-      });
-
-      if (!user) {
-        user = await UserModel.create({
-          email,
-          firstName,
-          lastName,
-          profilePic,
-          password: "google-auth-user",
-        });
-      }
-
-      const token = jwt.sign(
-        {
-          userId: user._id,
-        },
-
-        process.env.JWT_SECRET,
-
-        {
-          expiresIn: "7d",
-        },
-      );
-
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-      });
-
-      const userObj = user.toObject();
-
-      delete userObj.password;
-
-      res.status(200).json({
-        payload: userObj,
-      });
-    } catch (err) {
-      console.log(err);
-
-      res.status(500).json({
-        error: err.message,
-      });
-    }
-  },
-);
-
 userRouter.get("/logout", verifyToken, async (req, res) => {
   res.clearCookie("token", {
 
@@ -320,18 +265,28 @@ userRouter.get("/profile-stats", verifyToken, async (req, res) => {
   }
 });
 
-userRouter.post("/update-profile-pic", verifyToken, async (req, res) => {
+userRouter.post("/update-profile-pic", verifyToken, upload.single("profilePic"), async (req, res) => {
   try {
-    const { profilePic } = req.body;
+    let profilePicUrl = "";
+    if (req.file) {
+      profilePicUrl = req.file.path; // Cloudinary URL from upload middleware
+    } else {
+      profilePicUrl = req.body.profilePic; // Fallback to raw string URL
+    }
+
+    if (!profilePicUrl) {
+      return res.status(400).json({ message: "No profile picture provided" });
+    }
 
     const updated = await UserModel.findByIdAndUpdate(
       req.user.userId,
-      { profilePic },
+      { profilePic: profilePicUrl },
       { new: true },
     ).select("-password");
 
     res.json({ payload: updated });
   } catch (err) {
+    console.error("Profile pic update error:", err);
     res.status(500).json({ message: "Error updating profile pic" });
   }
 });

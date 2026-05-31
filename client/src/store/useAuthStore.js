@@ -60,40 +60,6 @@ export const useAuthStore = create(
         }
       },
 
-      googleLogin: async (googleUserObj) => {
-        try {
-          set({
-            loading: true,
-            error: null,
-          });
-
-          let res = await api.post("/user-api/google-login", googleUserObj);
-
-          set({
-            loading: false,
-            error: null,
-            isAuthenticated: true,
-            user: res.data.payload,
-          });
-
-          return true;
-        } catch (err) {
-          console.log(err);
-
-          set({
-            loading: false,
-            error:
-              err.response?.data?.message ||
-              err.message ||
-              "Google Login failed",
-            isAuthenticated: false,
-            user: null,
-          });
-
-          return false;
-        }
-      },
-
       logout: async () => {
         try {
           set({
