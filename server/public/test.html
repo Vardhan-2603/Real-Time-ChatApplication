@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        body { font-family: sans-serif; display: flex; gap: 20px; padding: 20px;}
+        .col { width: 50%; max-width: 400px; }
+        input { width: 100%; padding: 8px; margin-bottom: 10px; }
+        .log-box { background: #f4f4f4; padding: 10px; height: 400px; overflow-y: auto; border: 1px solid #ccc; }
+        .message { margin-bottom: 8px; padding: 8px; background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .dm { border-left: 4px solid #4CAF50; }
+        .channel { border-left: 4px solid #FF9800; }
+    </style>
+</head>
+<body>
+    <div class="col">
+        <h3>Login (Simulate React App)</h3>
+        <label>My User ID:</label>
+        <input type="text" id="myId" value="USER_A_ID_HERE">
+        
+        <label>My Channel ID (Optional):</label>
+        <input type="text" id="myChannel" value="CHANNEL_ID_HERE">
+        
+        <button onclick="connectChat()">Connect to Chat</button>
+        <br><br>
+
+        <div id="logs" class="log-box"></div>
+    </div>
+
+    <!-- Load Socket.io -->
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <script>
+        // Connect to the backend
+        const socket = io("http://40.0.42.34:4000");
+        let socket;
+        const logBox = document.getElementById("logs");
+
+        function addLog(text, type) {
+            logBox.innerHTML += `<div class="message ${type}">${text}</div>`;
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        function connectChat() {
+            const myId = document.getElementById("myId").value;
+            const myChannel = document.getElementById("myChannel").value;
+
+            // Connect to server
+            socket = io("http://localhost:4000");
+
+            socket.on("connect", () => {
+                addLog(`Connected! Socket ID: ${socket.id}`, 'channel');
+                
+                // Pretend we are logging in on React
+                socket.emit("setup", { 
+                    _id: myId, 
+                    channels: myChannel ? [myChannel] : [] 
+                });
+            });
+
+            // Listen for incoming messages triggered by MongoDB Change Stream!
+            socket.on("message Received", (msg) => {
+                console.log("Got message payload:", msg);
+                const senderName = msg.sender?.name || msg.sender; // Handle populated or raw ID
+                
+                if (msg.channel) {
+                    addLog(`📢 <b>${senderName}</b> to Channel: ${msg.content}`, 'channel');
+                } else {
+                    addLog(`💬 <b>${senderName}</b> to Me: ${msg.content}`, 'dm');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "rewrites": [
+    {
+      "source": "/user-api/:path*",
+      "destination": "https://chat-app-api-fmbegkegfwayc0dk.canadacentral-01.azurewebsites.net/user-api/:path*"
+    },
+    {
+      "source": "/message-api/:path*",
+      "destination": "https://chat-app-api-fmbegkegfwayc0dk.canadacentral-01.azurewebsites.net/message-api/:path*"
+    },
+    {
+      "source": "/channel-api/:path*",
+      "destination": "https://chat-app-api-fmbegkegfwayc0dk.canadacentral-01.azurewebsites.net/channel-api/:path*"
+    },
+    {
+      "source": "/dashboard-api/:path*",
+      "destination": "https://chat-app-api-fmbegkegfwayc0dk.canadacentral-01.azurewebsites.net/dashboard-api/:path*"
+    },
+    {
+      "source": "/message-feature-api/:path*",
+      "destination": "https://chat-app-api-fmbegkegfwayc0dk.canadacentral-01.azurewebsites.net/message-feature-api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
