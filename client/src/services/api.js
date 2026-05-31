@@ -16,14 +16,20 @@ async function apiFetch(path, options = {}) {
     ...options,
   };
 
+  const token = localStorage.getItem("token");
+  const headers = { ...(options.headers || {}) };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   // Don't set Content-Type for FormData — browser sets it with boundary
   if (!(options.body instanceof FormData)) {
     config.headers = {
       "Content-Type": "application/json",
-      ...(options.headers || {}),
+      ...headers,
     };
   } else {
-    config.headers = options.headers || {};
+    config.headers = headers;
   }
 
   const res = await fetch(url, config);

@@ -133,7 +133,7 @@ userRouter.post("/login", async (req, res) => {
   const userObj = user.toObject();
   delete userObj.password;
 
-  res.status(200).json({ message: "Login Success", payload: userObj });
+  res.status(200).json({ message: "Login Success", payload: userObj, token });
 });
 
 userRouter.patch("/change-password", verifyToken, async (req, res) => {

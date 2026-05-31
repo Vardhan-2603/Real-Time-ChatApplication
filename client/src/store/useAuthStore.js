@@ -21,6 +21,7 @@ export const useAuthStore = create(
           });
         } catch (err) {
           console.log("checkAuth error:", err);
+          localStorage.removeItem("token");
           set({
             user: null,
             isAuthenticated: false,
@@ -38,6 +39,10 @@ export const useAuthStore = create(
 
           let res = await api.post("/user-api/login", userCredObj);
 
+          if (res.data.token) {
+            localStorage.setItem("token", res.data.token);
+          }
+
           set({
             loading: false,
             error: null,
@@ -48,6 +53,7 @@ export const useAuthStore = create(
           return true;
         } catch (err) {
           console.log(err);
+          localStorage.removeItem("token");
 
           set({
             loading: false,
@@ -68,6 +74,7 @@ export const useAuthStore = create(
           });
 
           await api.get("/user-api/logout");
+          localStorage.removeItem("token");
 
           set({
             user: null,
