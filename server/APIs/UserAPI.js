@@ -125,17 +125,11 @@ userRouter.post("/login", async (req, res) => {
   );
 
   res.cookie("token", token, {
-
-  httpOnly: true,
-
-  secure: false,
-
-  sameSite: "lax",
-
-  maxAge:
-    1000 * 60 * 60 * 24 * 7,
-
-});
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  });
   const userObj = user.toObject();
   delete userObj.password;
 
@@ -174,14 +168,10 @@ userRouter.patch("/change-password", verifyToken, async (req, res) => {
 
 userRouter.get("/logout", verifyToken, async (req, res) => {
   res.clearCookie("token", {
-
-  httpOnly: true,
-
-  secure: false,
-
-  sameSite: "lax",
-
-});
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  });
   res.status(200).json({ message: "logged out successfully" });
 });
 
